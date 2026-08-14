@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { departments, employees, users } from "@/db/schema";
-import { eq, count, desc } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
-// Get all departments
 export async function GET(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ departments: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 
@@ -17,32 +13,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await db
-      .select({
-        department: departments,
-        manager: {
-          id: users.id,
-          firstName: users.firstName,
-          lastName: users.lastName,
-        },
-      })
-      .from(departments)
-      .leftJoin(users, eq(departments.managerId, users.id))
-      .where(eq(departments.organizationId, organizationId))
-      .orderBy(departments.name);
+    const { data, error } = await supabase
+      .from("departments")
+      .select(`
+        *,
+        manager:users(id, first_name, last_name)
+      `)
+      .eq("organization_id", organizationId)
+      .order("name");
 
-    // Get employee count for each department
+    if (error) throw new Error(error.message);
+
     const deptWithCounts = await Promise.all(
-      result.map(async (row) => {
-        const [countResult] = await db
-          .select({ count: count() })
-          .from(employees)
-          .where(eq(employees.departmentId, row.department.id));
+      (data || []).map(async (dept: any) => {
+        const { count } = await supabase
+          .from("employees")
+          .select("*", { count: "exact", head: true })
+          .eq("department_id", dept.id);
 
         return {
-          ...row.department,
-          manager: row.manager,
-          employeeCount: countResult?.count || 0,
+          ...dept,
+          employeeCount: count || 0,
         };
       })
     );
@@ -57,25 +48,26 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Create department
 export async function POST(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { organizationId, name, description, managerId, parentId } = body;
 
-    const [department] = await db
-      .insert(departments)
-      .values({
-        organizationId,
+    const { data, error } = await supabase
+      .from("departments")
+      .insert({
+        organization_id: organizationId,
         name,
         description,
-        managerId: managerId || null,
-        parentId: parentId || null,
+        manager_id: managerId || null,
+        parent_id: parentId || null,
       })
-      .returning();
+      .select()
+      .single();
 
-    return NextResponse.json({ department });
+    if (error) throw new Error(error.message);
+
+    return NextResponse.json({ department: data });
   } catch (error) {
     console.error("Error creating department:", error);
     return NextResponse.json(

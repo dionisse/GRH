@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { employees, users, departments, positions, careerHistory } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
-// Get single employee
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -11,52 +8,36 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const result = await db
-      .select({
-        employee: employees,
-        user: {
-          id: users.id,
-          email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          avatar: users.avatar,
-        },
-        department: {
-          id: departments.id,
-          name: departments.name,
-        },
-        position: {
-          id: positions.id,
-          title: positions.title,
-        },
-      })
-      .from(employees)
-      .innerJoin(users, eq(employees.userId, users.id))
-      .leftJoin(departments, eq(employees.departmentId, departments.id))
-      .leftJoin(positions, eq(employees.positionId, positions.id))
-      .where(eq(employees.id, id))
-      .limit(1);
+    const { data, error } = await supabase
+      .from("employees")
+      .select(`
+        *,
+        users!inner(id, email, first_name, last_name, avatar),
+        departments(id, name),
+        positions(id, title)
+      `)
+      .eq("id", id)
+      .single();
 
-    if (result.length === 0) {
+    if (error || !data) {
       return NextResponse.json(
         { error: "Employee not found" },
         { status: 404 }
       );
     }
 
-    // Get career history
-    const history = await db
-      .select()
-      .from(careerHistory)
-      .where(eq(careerHistory.employeeId, id));
+    const { data: history } = await supabase
+      .from("career_history")
+      .select("*")
+      .eq("employee_id", id);
 
     return NextResponse.json({
       employee: {
-        ...result[0].employee,
-        user: result[0].user,
-        department: result[0].department,
-        position: result[0].position,
-        careerHistory: history,
+        ...data,
+        user: data.users,
+        department: data.departments,
+        position: data.positions,
+        careerHistory: history || [],
       },
     });
   } catch (error) {
@@ -68,7 +49,6 @@ export async function GET(
   }
 }
 
-// Update employee
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -77,16 +57,16 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    const [updated] = await db
-      .update(employees)
-      .set({
-        ...body,
-        updatedAt: new Date(),
-      })
-      .where(eq(employees.id, id))
-      .returning();
+    const { data, error } = await supabase
+      .from("employees")
+      .update({ ...body, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+      .single();
 
-    return NextResponse.json({ employee: updated });
+    if (error) throw new Error(error.message);
+
+    return NextResponse.json({ employee: data });
   } catch (error) {
     console.error("Error updating employee:", error);
     return NextResponse.json(
@@ -96,7 +76,6 @@ export async function PUT(
   }
 }
 
-// Delete employee
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -104,15 +83,16 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Soft delete - set status to terminated
-    await db
-      .update(employees)
-      .set({
+    const { error } = await supabase
+      .from("employees")
+      .update({
         status: "terminated",
-        terminationDate: new Date().toISOString().split("T")[0],
-        updatedAt: new Date(),
+        termination_date: new Date().toISOString().split("T")[0],
+        updated_at: new Date().toISOString(),
       })
-      .where(eq(employees.id, id));
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
 
     return NextResponse.json({ success: true });
   } catch (error) {

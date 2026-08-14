@@ -1,12 +1,11 @@
-import { db } from "@/db";
-import { sql } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    if (!db) return Response.json({ ok: false, reason: "no-database" });
-    await db.execute(sql`select 1`);
+    const { data, error } = await supabase.from("organizations").select("id").limit(1);
+    if (error) return Response.json({ ok: false, error: error.message });
     return Response.json({ ok: true });
   } catch {
     return Response.json({ ok: false }, { status: 500 });

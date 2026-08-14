@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { employees, users, departments, positions } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 import bcrypt from "bcryptjs";
 
-// Get all employees
 export async function GET(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ employees: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 
@@ -18,41 +14,30 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await db
-      .select({
-        employee: employees,
-        user: {
-          id: users.id,
-          email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          avatar: users.avatar,
-        },
-        department: {
-          id: departments.id,
-          name: departments.name,
-        },
-        position: {
-          id: positions.id,
-          title: positions.title,
-          category: positions.category,
-        },
-      })
-      .from(employees)
-      .innerJoin(users, eq(employees.userId, users.id))
-      .leftJoin(departments, eq(employees.departmentId, departments.id))
-      .leftJoin(positions, eq(employees.positionId, positions.id))
-      .where(eq(employees.organizationId, organizationId))
-      .orderBy(desc(employees.createdAt));
+    const { data, error } = await supabase
+      .from("employees")
+      .select(`
+        *,
+        users!inner(id, email, first_name, last_name, avatar),
+        departments(id, name),
+        positions(id, title, category)
+      `)
+      .eq("organization_id", organizationId)
+      .order("created_at", { ascending: false });
 
-    const formattedResult = result.map((row) => ({
-      ...row.employee,
-      user: row.user,
-      department: row.department,
-      position: row.position,
+    if (error) throw new Error(error.message);
+
+    const formatted = (data || []).map((row: any) => ({
+      ...row,
+      user: row.users,
+      department: row.departments,
+      position: row.positions,
+      users: undefined,
+      departments: undefined,
+      positions: undefined,
     }));
 
-    return NextResponse.json({ employees: formattedResult });
+    return NextResponse.json({ employees: formatted });
   } catch (error) {
     console.error("Error fetching employees:", error);
     return NextResponse.json(
@@ -62,10 +47,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Create employee
 export async function POST(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const {
       organizationId,
@@ -91,63 +74,67 @@ export async function POST(request: NextRequest) {
       cniNumber,
     } = body;
 
-    // Generate matricule
-    const employeeCount = await db
-      .select()
-      .from(employees)
-      .where(eq(employees.organizationId, organizationId));
-    const matricule = `MAT${String(employeeCount.length + 1).padStart(5, "0")}`;
+    const { count: empCount } = await supabase
+      .from("employees")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", organizationId);
 
-    // Create user account
+    const matricule = `MAT${String((empCount || 0) + 1).padStart(5, "0")}`;
+
     const passwordHash = await bcrypt.hash("Bienvenue123!", 10);
-    const [user] = await db
-      .insert(users)
-      .values({
-        organizationId,
+
+    const { data: user, error: userError } = await supabase
+      .from("users")
+      .insert({
+        organization_id: organizationId,
         email,
-        passwordHash,
-        firstName,
-        lastName,
+        password_hash: passwordHash,
+        first_name: firstName,
+        last_name: lastName,
         role: "employee",
       })
-      .returning();
+      .select()
+      .single();
 
-    // Calculate probation end date (3 months for regular employees, 6 months for managers)
+    if (userError) throw new Error(userError.message);
+
     const hireDateObj = new Date(hireDate);
     const probationMonths = professionalCategory?.startsWith("C") ? 6 : 3;
     const probationEndDate = new Date(hireDateObj);
     probationEndDate.setMonth(probationEndDate.getMonth() + probationMonths);
 
-    // Create employee record
-    const [employee] = await db
-      .insert(employees)
-      .values({
-        userId: user.id,
-        organizationId,
+    const { data: employee, error: empError } = await supabase
+      .from("employees")
+      .insert({
+        user_id: user.id,
+        organization_id: organizationId,
         matricule,
-        departmentId: departmentId || null,
-        positionId: positionId || null,
-        contractType,
-        professionalCategory: professionalCategory || null,
-        hireDate,
-        contractStartDate: hireDate,
-        probationEndDate: probationEndDate.toISOString().split("T")[0],
-        baseSalary: baseSalary || null,
-        transportAllowance: transportAllowance || "0",
+        department_id: departmentId || null,
+        position_id: positionId || null,
+        contract_type: contractType,
+        professional_category: professionalCategory || null,
+        hire_date: hireDate,
+        contract_start_date: hireDate,
+        probation_end_date: probationEndDate.toISOString().split("T")[0],
+        base_salary: baseSalary || null,
+        transport_allowance: transportAllowance || "0",
         phone,
         address,
         city,
-        birthDate,
-        birthPlace,
+        birth_date: birthDate,
+        birth_place: birthPlace,
         gender,
-        maritalStatus,
-        numberOfChildren: numberOfChildren || 0,
-        cnssNumber,
-        cniNumber,
+        marital_status: maritalStatus,
+        number_of_children: numberOfChildren || 0,
+        cnss_number: cnssNumber,
+        cni_number: cniNumber,
         status: "active",
         nationality: "Béninoise",
       })
-      .returning();
+      .select()
+      .single();
+
+    if (empError) throw new Error(empError.message);
 
     return NextResponse.json({ employee, user });
   } catch (error) {

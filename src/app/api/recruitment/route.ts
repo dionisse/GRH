@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { jobPostings, candidates, positions } from "@/db/schema";
-import { eq, desc, count } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
-// Get job postings
 export async function GET(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ jobPostings: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 
@@ -17,31 +13,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await db
-      .select({
-        jobPosting: jobPostings,
-        position: {
-          id: positions.id,
-          title: positions.title,
-        },
-      })
-      .from(jobPostings)
-      .leftJoin(positions, eq(jobPostings.positionId, positions.id))
-      .where(eq(jobPostings.organizationId, organizationId))
-      .orderBy(desc(jobPostings.createdAt));
+    const { data, error } = await supabase
+      .from("job_postings")
+      .select(`
+        *,
+        positions(id, title)
+      `)
+      .eq("organization_id", organizationId)
+      .order("created_at", { ascending: false });
 
-    // Get candidate count for each job posting
+    if (error) throw new Error(error.message);
+
     const jobsWithCounts = await Promise.all(
-      result.map(async (row) => {
-        const [countResult] = await db
-          .select({ count: count() })
-          .from(candidates)
-          .where(eq(candidates.jobPostingId, row.jobPosting.id));
+      (data || []).map(async (job: any) => {
+        const { count } = await supabase
+          .from("candidates")
+          .select("*", { count: "exact", head: true })
+          .eq("job_posting_id", job.id);
 
         return {
-          ...row.jobPosting,
-          position: row.position,
-          candidateCount: countResult?.count || 0,
+          ...job,
+          position: job.positions,
+          candidateCount: count || 0,
         };
       })
     );
@@ -56,10 +49,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Create job posting
 export async function POST(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const {
       organizationId,
@@ -76,27 +67,30 @@ export async function POST(request: NextRequest) {
       createdBy,
     } = body;
 
-    const [jobPosting] = await db
-      .insert(jobPostings)
-      .values({
-        organizationId,
-        positionId: positionId || null,
+    const { data, error } = await supabase
+      .from("job_postings")
+      .insert({
+        organization_id: organizationId,
+        position_id: positionId || null,
         title,
         description,
         requirements,
         benefits,
         location,
-        salaryMin,
-        salaryMax,
-        contractType,
-        closingDate,
-        createdBy,
+        salary_min: salaryMin,
+        salary_max: salaryMax,
+        contract_type: contractType,
+        closing_date: closingDate,
+        created_by: createdBy,
         status: "open",
-        publishedAt: new Date(),
+        published_at: new Date().toISOString(),
       })
-      .returning();
+      .select()
+      .single();
 
-    return NextResponse.json({ jobPosting });
+    if (error) throw new Error(error.message);
+
+    return NextResponse.json({ jobPosting: data });
   } catch (error) {
     console.error("Error creating job posting:", error);
     return NextResponse.json(

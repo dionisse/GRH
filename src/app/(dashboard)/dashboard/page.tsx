@@ -41,12 +41,13 @@ export default function DashboardPage() {
     if (userStr) {
       const user = JSON.parse(userStr);
       setOrganizationId(user.organizationId);
+    } else {
+      // No login — the API will fall back to the first organization
+      setOrganizationId("");
     }
   }, []);
 
   useEffect(() => {
-    if (!organizationId) return;
-
     const fetchStats = async () => {
       try {
         const response = await fetch(`/api/dashboard/stats?organizationId=${organizationId}`);

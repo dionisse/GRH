@@ -1,85 +1,81 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { users, organizations } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 import bcrypt from "bcryptjs";
-import { v4 as uuidv4 } from "uuid";
 
-// Login
 export async function POST(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { email, password, action } = body;
 
     if (action === "register") {
-      // Registration
       const { firstName, lastName, organizationName } = body;
 
-      // Check if user exists
-      const existingUser = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, email))
+      const { data: existing } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", email)
         .limit(1);
 
-      if (existingUser.length > 0) {
+      if (existing && existing.length > 0) {
         return NextResponse.json(
           { error: "Un compte avec cet email existe déjà" },
           { status: 400 }
         );
       }
 
-      // Create organization
-      const [org] = await db
-        .insert(organizations)
-        .values({
+      const { data: org, error: orgError } = await supabase
+        .from("organizations")
+        .insert({
           name: organizationName || `${firstName} ${lastName} Org`,
         })
-        .returning();
+        .select()
+        .single();
 
-      // Hash password
+      if (orgError) throw new Error(orgError.message);
+
       const passwordHash = await bcrypt.hash(password, 10);
 
-      // Create user
-      const [user] = await db
-        .insert(users)
-        .values({
-          organizationId: org.id,
+      const { data: user, error: userError } = await supabase
+        .from("users")
+        .insert({
+          organization_id: org.id,
           email,
-          passwordHash,
-          firstName,
-          lastName,
+          password_hash: passwordHash,
+          first_name: firstName,
+          last_name: lastName,
           role: "admin",
         })
-        .returning();
+        .select()
+        .single();
+
+      if (userError) throw new Error(userError.message);
 
       return NextResponse.json({
         user: {
           id: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName: user.first_name,
+          lastName: user.last_name,
           role: user.role,
-          organizationId: user.organizationId,
+          organizationId: user.organization_id,
         },
       });
     } else {
-      // Login
-      const [user] = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, email))
-        .limit(1);
+      const { data: user, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .limit(1)
+        .single();
 
-      if (!user) {
+      if (error || !user) {
         return NextResponse.json(
           { error: "Email ou mot de passe incorrect" },
           { status: 401 }
         );
       }
 
-      const validPassword = await bcrypt.compare(password, user.passwordHash);
+      const validPassword = await bcrypt.compare(password, user.password_hash);
       if (!validPassword) {
         return NextResponse.json(
           { error: "Email ou mot de passe incorrect" },
@@ -87,20 +83,19 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Update last login
-      await db
-        .update(users)
-        .set({ lastLogin: new Date() })
-        .where(eq(users.id, user.id));
+      await supabase
+        .from("users")
+        .update({ last_login: new Date().toISOString() })
+        .eq("id", user.id);
 
       return NextResponse.json({
         user: {
           id: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName: user.first_name,
+          lastName: user.last_name,
           role: user.role,
-          organizationId: user.organizationId,
+          organizationId: user.organization_id,
         },
       });
     }

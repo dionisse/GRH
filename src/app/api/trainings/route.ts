@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { trainings, employeeTrainings, employees, users } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
-// Get trainings
 export async function GET(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ trainings: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 
@@ -17,13 +13,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await db
-      .select()
-      .from(trainings)
-      .where(eq(trainings.organizationId, organizationId))
-      .orderBy(desc(trainings.createdAt));
+    const { data, error } = await supabase
+      .from("trainings")
+      .select("*")
+      .eq("organization_id", organizationId)
+      .order("created_at", { ascending: false });
 
-    return NextResponse.json({ trainings: result });
+    if (error) throw new Error(error.message);
+
+    return NextResponse.json({ trainings: data || [] });
   } catch (error) {
     console.error("Error fetching trainings:", error);
     return NextResponse.json(
@@ -33,28 +31,29 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Create training
 export async function POST(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { organizationId, title, description, provider, duration, cost, category, isExternal } = body;
 
-    const [training] = await db
-      .insert(trainings)
-      .values({
-        organizationId,
+    const { data, error } = await supabase
+      .from("trainings")
+      .insert({
+        organization_id: organizationId,
         title,
         description,
         provider,
         duration,
         cost,
         category,
-        isExternal: isExternal || false,
+        is_external: isExternal || false,
       })
-      .returning();
+      .select()
+      .single();
 
-    return NextResponse.json({ training });
+    if (error) throw new Error(error.message);
+
+    return NextResponse.json({ training: data });
   } catch (error) {
     console.error("Error creating training:", error);
     return NextResponse.json(

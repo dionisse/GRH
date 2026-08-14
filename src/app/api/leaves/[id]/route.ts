@@ -1,73 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { leaveRequests, leaveBalances } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
-// Update leave request (approve/reject)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const { id } = await params;
     const body = await request.json();
     const { status, approvedBy, rejectionReason } = body;
 
-    const [leave] = await db
-      .select()
-      .from(leaveRequests)
-      .where(eq(leaveRequests.id, id))
-      .limit(1);
+    const { data: leave, error: leaveError } = await supabase
+      .from("leave_requests")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    if (!leave) {
+    if (leaveError || !leave) {
       return NextResponse.json(
         { error: "Leave request not found" },
         { status: 404 }
       );
     }
 
-    const [updated] = await db
-      .update(leaveRequests)
-      .set({
+    const { data: updated, error: updateError } = await supabase
+      .from("leave_requests")
+      .update({
         status,
-        approvedBy: approvedBy || null,
-        approvedAt: status === "approved" ? new Date() : null,
-        rejectionReason: rejectionReason || null,
-        updatedAt: new Date(),
+        approved_by: approvedBy || null,
+        approved_at: status === "approved" ? new Date().toISOString() : null,
+        rejection_reason: rejectionReason || null,
+        updated_at: new Date().toISOString(),
       })
-      .where(eq(leaveRequests.id, id))
-      .returning();
+      .eq("id", id)
+      .select()
+      .single();
 
-    // Update balance if approved
+    if (updateError) throw new Error(updateError.message);
+
     if (status === "approved") {
       const currentYear = new Date().getFullYear();
-      const [balance] = await db
-        .select()
-        .from(leaveBalances)
-        .where(
-          and(
-            eq(leaveBalances.employeeId, leave.employeeId),
-            eq(leaveBalances.year, currentYear),
-            eq(leaveBalances.type, leave.type)
-          )
-        )
-        .limit(1);
+      const { data: balance } = await supabase
+        .from("leave_balances")
+        .select("*")
+        .eq("employee_id", leave.employee_id)
+        .eq("year", currentYear)
+        .eq("type", leave.type)
+        .single();
 
       if (balance) {
         const takenNum = parseFloat(balance.taken) + parseFloat(leave.days);
         const pendingNum = Math.max(0, parseFloat(balance.pending) - parseFloat(leave.days));
         const remainingNum = parseFloat(balance.entitled) - takenNum;
-        
-        await db
-          .update(leaveBalances)
-          .set({
+
+        await supabase
+          .from("leave_balances")
+          .update({
             taken: takenNum.toString(),
             pending: pendingNum.toString(),
             remaining: remainingNum.toString(),
-            updatedAt: new Date(),
+            updated_at: new Date().toISOString(),
           })
-          .where(eq(leaveBalances.id, balance.id));
+          .eq("id", balance.id);
       }
     }
 
@@ -81,22 +75,22 @@ export async function PUT(
   }
 }
 
-// Delete/Cancel leave request
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const { id } = await params;
 
-    await db
-      .update(leaveRequests)
-      .set({
+    const { error } = await supabase
+      .from("leave_requests")
+      .update({
         status: "cancelled",
-        updatedAt: new Date(),
+        updated_at: new Date().toISOString(),
       })
-      .where(eq(leaveRequests.id, id));
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
 
     return NextResponse.json({ success: true });
   } catch (error) {

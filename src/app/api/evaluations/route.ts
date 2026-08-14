@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { evaluations, employees, users, objectives } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
-// Get evaluations
 export async function GET(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ evaluations: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
-    const employeeId = searchParams.get("employeeId");
 
     if (!organizationId) {
       return NextResponse.json(
@@ -18,32 +13,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await db
-      .select({
-        evaluation: evaluations,
-        employee: employees,
-        user: {
-          id: users.id,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          avatar: users.avatar,
-        },
-      })
-      .from(evaluations)
-      .innerJoin(employees, eq(evaluations.employeeId, employees.id))
-      .innerJoin(users, eq(employees.userId, users.id))
-      .where(eq(employees.organizationId, organizationId))
-      .orderBy(desc(evaluations.createdAt));
+    const { data, error } = await supabase
+      .from("evaluations")
+      .select(`
+        *,
+        employees!inner(
+          *,
+          users!inner(id, first_name, last_name, avatar)
+        )
+      `)
+      .eq("employees.organization_id", organizationId)
+      .order("created_at", { ascending: false });
 
-    const formattedResult = result.map((row) => ({
-      ...row.evaluation,
+    if (error) throw new Error(error.message);
+
+    const formatted = (data || []).map((row: any) => ({
+      ...row,
       employee: {
-        ...row.employee,
-        user: row.user,
+        ...row.employees,
+        user: row.employees.users,
       },
     }));
 
-    return NextResponse.json({ evaluations: formattedResult });
+    return NextResponse.json({ evaluations: formatted });
   } catch (error) {
     console.error("Error fetching evaluations:", error);
     return NextResponse.json(
@@ -53,26 +45,27 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Create evaluation
 export async function POST(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { employeeId, evaluatorId, period, scheduledDate, goals } = body;
 
-    const [evaluation] = await db
-      .insert(evaluations)
-      .values({
-        employeeId,
-        evaluatorId,
+    const { data, error } = await supabase
+      .from("evaluations")
+      .insert({
+        employee_id: employeeId,
+        evaluator_id: evaluatorId,
         period,
-        scheduledDate,
+        scheduled_date: scheduledDate,
         goals,
         status: "draft",
       })
-      .returning();
+      .select()
+      .single();
 
-    return NextResponse.json({ evaluation });
+    if (error) throw new Error(error.message);
+
+    return NextResponse.json({ evaluation: data });
   } catch (error) {
     console.error("Error creating evaluation:", error);
     return NextResponse.json(

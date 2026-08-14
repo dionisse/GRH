@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { leaveRequests, employees, users, leaveBalances } from "@/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
-// Get leave requests
 export async function GET(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ leaves: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
-    const employeeId = searchParams.get("employeeId");
 
     if (!organizationId) {
       return NextResponse.json(
@@ -18,35 +13,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await db
-      .select({
-        leave: leaveRequests,
-        employee: {
-          id: employees.id,
-          matricule: employees.matricule,
-        },
-        user: {
-          id: users.id,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          avatar: users.avatar,
-        },
-      })
-      .from(leaveRequests)
-      .innerJoin(employees, eq(leaveRequests.employeeId, employees.id))
-      .innerJoin(users, eq(employees.userId, users.id))
-      .where(eq(employees.organizationId, organizationId))
-      .orderBy(desc(leaveRequests.createdAt));
+    const { data, error } = await supabase
+      .from("leave_requests")
+      .select(`
+        *,
+        employees!inner(
+          id, matricule,
+          users!inner(id, first_name, last_name, avatar)
+        )
+      `)
+      .eq("employees.organization_id", organizationId)
+      .order("created_at", { ascending: false });
 
-    const formattedResult = result.map((row) => ({
-      ...row.leave,
+    if (error) throw new Error(error.message);
+
+    const formatted = (data || []).map((row: any) => ({
+      ...row,
       employee: {
-        ...row.employee,
-        user: row.user,
+        ...row.employees,
+        user: row.employees.users,
       },
     }));
 
-    return NextResponse.json({ leaves: formattedResult });
+    return NextResponse.json({ leaves: formatted });
   } catch (error) {
     console.error("Error fetching leaves:", error);
     return NextResponse.json(
@@ -56,45 +45,41 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Create leave request
 export async function POST(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { employeeId, type, familyEvent, startDate, endDate, days, reason, medicalCertificate } = body;
 
-    const [leave] = await db
-      .insert(leaveRequests)
-      .values({
-        employeeId,
+    const { data, error } = await supabase
+      .from("leave_requests")
+      .insert({
+        employee_id: employeeId,
         type,
-        familyEvent: familyEvent || null,
-        startDate,
-        endDate,
+        family_event: familyEvent || null,
+        start_date: startDate,
+        end_date: endDate,
         days,
         reason,
-        medicalCertificate: medicalCertificate || false,
+        medical_certificate: medicalCertificate || false,
         status: "pending",
       })
-      .returning();
+      .select()
+      .single();
 
-    // Update pending balance
+    if (error) throw new Error(error.message);
+
     const currentYear = new Date().getFullYear();
-    await db
-      .update(leaveBalances)
-      .set({
+    await supabase
+      .from("leave_balances")
+      .update({
         pending: days,
-        updatedAt: new Date(),
+        updated_at: new Date().toISOString(),
       })
-      .where(
-        and(
-          eq(leaveBalances.employeeId, employeeId),
-          eq(leaveBalances.year, currentYear),
-          eq(leaveBalances.type, type)
-        )
-      );
+      .eq("employee_id", employeeId)
+      .eq("year", currentYear)
+      .eq("type", type);
 
-    return NextResponse.json({ leave });
+    return NextResponse.json({ leave: data });
   } catch (error) {
     console.error("Error creating leave:", error);
     return NextResponse.json(

@@ -1,108 +1,88 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { employees, departments, leaveRequests, evaluations, trainings, jobPostings, candidates } from "@/db/schema";
-import { eq, count, and, gte, lte } from "drizzle-orm";
+import { supabase } from "@/lib/supabase";
 
 export async function GET(request: NextRequest) {
   try {
-    if (!db) return NextResponse.json({ stats: { totalEmployees: 0, totalDepartments: 0, pendingLeaves: 0, activeEvaluations: 0, totalTrainings: 0, openPositions: 0, newCandidates: 0, onLeave: 0 } });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 
-    if (!organizationId) {
-      return NextResponse.json(
-        { error: "Organization ID required" },
-        { status: 400 }
-      );
+    let orgId = organizationId;
+
+    if (!orgId) {
+      const { data: firstOrg } = await supabase
+        .from("organizations")
+        .select("id")
+        .limit(1)
+        .single();
+      if (!firstOrg) {
+        return NextResponse.json({ stats: { totalEmployees: 0, totalDepartments: 0, pendingLeaves: 0, activeEvaluations: 0, totalTrainings: 0, openPositions: 0, newCandidates: 0, onLeave: 0 } });
+      }
+      orgId = firstOrg.id;
     }
 
-    // Total employees
-    const [employeeCount] = await db
-      .select({ count: count() })
-      .from(employees)
-      .where(and(
-        eq(employees.organizationId, organizationId),
-        eq(employees.status, "active")
-      ));
+    const { count: totalEmployees } = await supabase
+      .from("employees")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", orgId)
+      .eq("status", "active");
 
-    // Total departments
-    const [departmentCount] = await db
-      .select({ count: count() })
-      .from(departments)
-      .where(eq(departments.organizationId, organizationId));
+    const { count: totalDepartments } = await supabase
+      .from("departments")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", orgId);
 
-    // Pending leave requests
-    const [pendingLeaves] = await db
-      .select({ count: count() })
-      .from(leaveRequests)
-      .innerJoin(employees, eq(leaveRequests.employeeId, employees.id))
-      .where(and(
-        eq(employees.organizationId, organizationId),
-        eq(leaveRequests.status, "pending")
-      ));
+    const { count: pendingLeaves } = await supabase
+      .from("leave_requests")
+      .select("*, employees!inner(organization_id)", { count: "exact", head: true })
+      .eq("employees.organization_id", orgId)
+      .eq("status", "pending");
 
-    // Active evaluations
-    const [activeEvaluations] = await db
-      .select({ count: count() })
-      .from(evaluations)
-      .innerJoin(employees, eq(evaluations.employeeId, employees.id))
-      .where(and(
-        eq(employees.organizationId, organizationId),
-        eq(evaluations.status, "in_progress")
-      ));
+    const { count: activeEvaluations } = await supabase
+      .from("evaluations")
+      .select("*, employees!inner(organization_id)", { count: "exact", head: true })
+      .eq("employees.organization_id", orgId)
+      .eq("status", "in_progress");
 
-    // Active trainings
-    const [activeTrainings] = await db
-      .select({ count: count() })
-      .from(trainings)
-      .where(eq(trainings.organizationId, organizationId));
+    const { count: totalTrainings } = await supabase
+      .from("trainings")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", orgId);
 
-    // Open positions
-    const [openPositions] = await db
-      .select({ count: count() })
-      .from(jobPostings)
-      .where(and(
-        eq(jobPostings.organizationId, organizationId),
-        eq(jobPostings.status, "open")
-      ));
+    const { count: openPositions } = await supabase
+      .from("job_postings")
+      .select("*", { count: "exact", head: true })
+      .eq("organization_id", orgId)
+      .eq("status", "open");
 
-    // New candidates this month
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
-    const [newCandidates] = await db
-      .select({ count: count() })
-      .from(candidates)
-      .innerJoin(jobPostings, eq(candidates.jobPostingId, jobPostings.id))
-      .where(and(
-        eq(jobPostings.organizationId, organizationId),
-        gte(candidates.appliedAt, startOfMonth)
-      ));
+    const { count: newCandidates } = await supabase
+      .from("candidates")
+      .select("*, job_postings!inner(organization_id)", { count: "exact", head: true })
+      .eq("job_postings.organization_id", orgId)
+      .gte("applied_at", startOfMonth.toISOString());
 
-    // Employees on leave
     const today = new Date().toISOString().split("T")[0];
-    const [onLeave] = await db
-      .select({ count: count() })
-      .from(leaveRequests)
-      .innerJoin(employees, eq(leaveRequests.employeeId, employees.id))
-      .where(and(
-        eq(employees.organizationId, organizationId),
-        eq(leaveRequests.status, "approved"),
-        lte(leaveRequests.startDate, today),
-        gte(leaveRequests.endDate, today)
-      ));
+    const { count: onLeave } = await supabase
+      .from("leave_requests")
+      .select("*, employees!inner(organization_id)", { count: "exact", head: true })
+      .eq("employees.organization_id", orgId)
+      .eq("status", "approved")
+      .lte("start_date", today)
+      .gte("end_date", today);
 
     return NextResponse.json({
       stats: {
-        totalEmployees: employeeCount?.count || 0,
-        totalDepartments: departmentCount?.count || 0,
-        pendingLeaves: pendingLeaves?.count || 0,
-        activeEvaluations: activeEvaluations?.count || 0,
-        totalTrainings: activeTrainings?.count || 0,
-        openPositions: openPositions?.count || 0,
-        newCandidates: newCandidates?.count || 0,
-        onLeave: onLeave?.count || 0,
+        totalEmployees: totalEmployees || 0,
+        totalDepartments: totalDepartments || 0,
+        pendingLeaves: pendingLeaves || 0,
+        activeEvaluations: activeEvaluations || 0,
+        totalTrainings: totalTrainings || 0,
+        openPositions: openPositions || 0,
+        newCandidates: newCandidates || 0,
+        onLeave: onLeave || 0,
       },
     });
   } catch (error) {
