@@ -85,7 +85,7 @@ export default function TrainingsPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <GraduationCap size={24} className="text-green-600" />
             </div>
             <div>
@@ -94,7 +94,7 @@ export default function TrainingsPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
               <Users size={24} className="text-blue-600" />
             </div>
             <div>
@@ -103,7 +103,7 @@ export default function TrainingsPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
               <DollarSign size={24} className="text-purple-600" />
             </div>
             <div>
@@ -116,7 +116,7 @@ export default function TrainingsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Catalogue de formations
             </h2>
             <p className="text-slate-500">
@@ -182,7 +182,7 @@ export default function TrainingsPage() {
                   )}
                 </div>
 
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
                   {training.title}
                 </h3>
                 <p className="text-sm text-slate-500 mb-4 line-clamp-2">
@@ -195,12 +195,12 @@ export default function TrainingsPage() {
                   </Badge>
                 )}
 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <div className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+                  <div className="flex items-center gap-1 text-sm text-slate-600">
                     <Clock size={14} />
                     {formatDuration(training.duration)}
                   </div>
-                  <div className="flex items-center gap-1 text-sm font-medium text-slate-900 dark:text-white">
+                  <div className="flex items-center gap-1 text-sm font-medium text-slate-900">
                     <DollarSign size={14} />
                     {formatCost(training.cost)}
                   </div>

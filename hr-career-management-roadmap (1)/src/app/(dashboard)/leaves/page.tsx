@@ -1,14 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Plus,
-  Search,
-  Calendar,
-  Clock,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
+import { Plus, Search, Calendar, Clock, CircleCheck as CheckCircle, Circle as XCircle } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -156,14 +149,14 @@ export default function LeavesPage() {
     <DashboardLayout title="Gestion des congés">
       <div className="space-y-6">
         {/* Rappel légal */}
-        <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+        <Card className="bg-blue-50 border-blue-200">
           <div className="flex items-start gap-3">
             <Calendar className="text-blue-600 mt-0.5" size={20} />
             <div>
-              <h4 className="font-medium text-blue-900 dark:text-blue-100">
+              <h4 className="font-medium text-blue-900">
                 Droits aux congés - Code du Travail Béninois
               </h4>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+              <p className="text-sm text-blue-700 mt-1">
                 {OHADA_CONFIG.leaves.annual.daysPerYear} jours ouvrables de congés payés par an 
                 ({OHADA_CONFIG.leaves.annual.daysPerMonth} jours par mois travaillé). 
                 Maternité : {OHADA_CONFIG.leaves.maternity.total} semaines. 
@@ -176,7 +169,7 @@ export default function LeavesPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
               <Clock size={24} className="text-amber-600" />
             </div>
             <div>
@@ -185,7 +178,7 @@ export default function LeavesPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <CheckCircle size={24} className="text-green-600" />
             </div>
             <div>
@@ -194,7 +187,7 @@ export default function LeavesPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
               <Calendar size={24} className="text-blue-600" />
             </div>
             <div>
@@ -207,7 +200,7 @@ export default function LeavesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Demandes de congés
             </h2>
           </div>
@@ -257,7 +250,7 @@ export default function LeavesPage() {
                       size="md"
                     />
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-slate-900 dark:text-white">
+                      <h4 className="font-semibold text-slate-900">
                         {leave.employee.user.lastName} {leave.employee.user.firstName}
                       </h4>
                       <p className="text-xs text-slate-400 font-mono">{leave.employee.matricule}</p>
@@ -266,7 +259,7 @@ export default function LeavesPage() {
                         <span className="text-sm text-slate-500">
                           {formatDate(leave.startDate)} - {formatDate(leave.endDate)}
                         </span>
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <span className="text-sm font-medium text-slate-700">
                           ({leave.days} jour{parseFloat(leave.days) > 1 ? "s" : ""})
                         </span>
                       </div>
@@ -355,7 +348,7 @@ export default function LeavesPage() {
             {selectedLeaveType === "sick" && (
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="medical" className="rounded" />
-                <label htmlFor="medical" className="text-sm text-slate-600 dark:text-slate-400">
+                <label htmlFor="medical" className="text-sm text-slate-600">
                   Certificat médical fourni (obligatoire au-delà de {OHADA_CONFIG.leaves.sickLeave.waitingPeriod} jours)
                 </label>
               </div>
@@ -365,14 +358,14 @@ export default function LeavesPage() {
 
             {/* Rappel des droits */}
             {selectedLeaveType === "annual" && (
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+              <div className="p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
                 <strong>Rappel :</strong> Droit à {OHADA_CONFIG.leaves.annual.daysPerYear} jours ouvrables/an. 
                 Bonus d'ancienneté après {OHADA_CONFIG.leaves.annual.seniorityBonus[0].years} ans.
               </div>
             )}
 
             {selectedLeaveType === "maternity" && (
-              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg text-sm text-green-700 dark:text-green-300">
+              <div className="p-3 bg-green-50 rounded-lg text-sm text-green-700">
                 <strong>Congé maternité :</strong> {OHADA_CONFIG.leaves.maternity.prenatal} semaines avant 
                 et {OHADA_CONFIG.leaves.maternity.postnatal} semaines après l'accouchement. 
                 Pris en charge par la CNSS.

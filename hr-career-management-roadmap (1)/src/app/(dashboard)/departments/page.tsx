@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Users, Building2, MoreVertical, Edit, Trash2 } from "lucide-react";
+import { Plus, Users, Building2, MoveVertical as MoreVertical, CreditCard as Edit, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -85,7 +85,7 @@ export default function DepartmentsPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
               <Building2 size={24} className="text-purple-600" />
             </div>
             <div>
@@ -94,7 +94,7 @@ export default function DepartmentsPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
               <Users size={24} className="text-blue-600" />
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function DepartmentsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Structure organisationnelle
             </h2>
             <p className="text-slate-500">
@@ -140,22 +140,22 @@ export default function DepartmentsPage() {
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
                     {department.name.charAt(0)}
                   </div>
-                  <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                  <button className="p-2 rounded-lg hover:bg-slate-100">
                     <MoreVertical size={18} className="text-slate-400" />
                   </button>
                 </div>
 
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
+                <h3 className="text-lg font-semibold text-slate-900 mb-1">
                   {department.name}
                 </h3>
                 <p className="text-sm text-slate-500 mb-4 line-clamp-2">
                   {department.description || "Aucune description"}
                 </p>
 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex items-center justify-between pt-4 border-t border-slate-200">
                   <div className="flex items-center gap-2">
                     <Users size={16} className="text-slate-400" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                    <span className="text-sm text-slate-600">
                       {department.employeeCount} employé{department.employeeCount > 1 ? "s" : ""}
                     </span>
                   </div>
@@ -165,7 +165,7 @@ export default function DepartmentsPage() {
                         name={`${department.manager.firstName} ${department.manager.lastName}`}
                         size="sm"
                       />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-slate-600">
                         {department.manager.firstName}
                       </span>
                     </div>
@@ -186,12 +186,12 @@ export default function DepartmentsPage() {
             <div className="w-32 h-20 bg-blue-600 rounded-lg flex items-center justify-center text-white font-semibold mb-4">
               Direction
             </div>
-            <div className="w-0.5 h-8 bg-slate-300 dark:bg-slate-600" />
+            <div className="w-0.5 h-8 bg-slate-300" />
             <div className="flex gap-8">
               {departments.slice(0, 4).map((dept, index) => (
                 <div key={dept.id} className="flex flex-col items-center">
-                  <div className="w-0.5 h-4 bg-slate-300 dark:bg-slate-600" />
-                  <div className="w-28 h-16 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center text-center px-2">
+                  <div className="w-0.5 h-4 bg-slate-300" />
+                  <div className="w-28 h-16 bg-slate-100 rounded-lg flex items-center justify-center text-center px-2">
                     <span className="text-sm font-medium">{dept.name}</span>
                   </div>
                 </div>

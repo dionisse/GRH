@@ -15,23 +15,23 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon, trend, color = "blue" }: StatCardProps) {
   const colorClasses = {
-    blue: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-    green: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
-    amber: "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
-    red: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
-    purple: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
+    blue: "bg-blue-50 text-blue-600",
+    green: "bg-emerald-50 text-emerald-600",
+    amber: "bg-amber-50 text-amber-600",
+    red: "bg-red-50 text-red-600",
+    purple: "bg-indigo-50 text-indigo-600",
   };
 
   return (
-    <div className="stat-card">
+    <div className="card flex items-center gap-4">
       <div className={`stat-icon ${colorClasses[color]}`}>
         {icon}
       </div>
-      <div className="flex-1">
-        <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
-        <p className="text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-slate-500 font-medium">{title}</p>
+        <p className="text-2xl font-bold text-slate-900 mt-0.5">{value}</p>
         {trend && (
-          <p className={`text-xs mt-1 ${trend.isPositive ? "text-green-600" : "text-red-600"}`}>
+          <p className={`text-xs mt-1 font-medium ${trend.isPositive ? "text-emerald-600" : "text-red-600"}`}>
             {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}% vs mois dernier
           </p>
         )}

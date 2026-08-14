@@ -67,7 +67,7 @@ export default function EvaluationsPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
               <Target size={24} className="text-blue-600" />
             </div>
             <div>
@@ -76,7 +76,7 @@ export default function EvaluationsPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
               <Calendar size={24} className="text-amber-600" />
             </div>
             <div>
@@ -87,7 +87,7 @@ export default function EvaluationsPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <Star size={24} className="text-green-600" />
             </div>
             <div>
@@ -96,7 +96,7 @@ export default function EvaluationsPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
               <TrendingUp size={24} className="text-purple-600" />
             </div>
             <div>
@@ -109,7 +109,7 @@ export default function EvaluationsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Évaluations de performance
             </h2>
             <p className="text-slate-500">
@@ -160,7 +160,7 @@ export default function EvaluationsPage() {
                 <div className="flex items-center gap-4 flex-1">
                   <Avatar name={evaluation.employee.name} size="lg" />
                   <div className="flex-1">
-                    <h4 className="font-semibold text-slate-900 dark:text-white">
+                    <h4 className="font-semibold text-slate-900">
                       {evaluation.employee.name}
                     </h4>
                     <p className="text-sm text-slate-500">
@@ -229,10 +229,10 @@ export default function EvaluationsPage() {
             ].map((objective, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+                className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"
               >
                 <div className="flex-1">
-                  <h4 className="font-medium text-slate-900 dark:text-white">
+                  <h4 className="font-medium text-slate-900">
                     {objective.title}
                   </h4>
                   <p className="text-sm text-slate-500">

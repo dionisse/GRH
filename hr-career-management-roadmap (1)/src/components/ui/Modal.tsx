@@ -47,16 +47,16 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalPr
         onClick={onClose}
       />
       <div
-        className={`relative bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full ${sizeClasses[size]} animate-slide-in`}
+        className={`relative bg-white rounded-xl shadow-xl w-full ${sizeClasses[size]} animate-slide-in`}
       >
         {title && (
-          <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          <div className="flex items-center justify-between p-4 border-b border-slate-200">
+            <h2 className="text-lg font-semibold text-slate-900">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
             >
               <X size={20} />
             </button>

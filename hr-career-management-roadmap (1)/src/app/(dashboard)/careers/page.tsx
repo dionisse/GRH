@@ -83,7 +83,7 @@ export default function CareersPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
               <TrendingUp size={24} className="text-blue-600" />
             </div>
             <div>
@@ -92,7 +92,7 @@ export default function CareersPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <Award size={24} className="text-green-600" />
             </div>
             <div>
@@ -101,7 +101,7 @@ export default function CareersPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
               <Target size={24} className="text-purple-600" />
             </div>
             <div>
@@ -110,7 +110,7 @@ export default function CareersPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
               <DollarSign size={24} className="text-amber-600" />
             </div>
             <div>
@@ -123,7 +123,7 @@ export default function CareersPage() {
         {/* Career Paths */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Plans de développement individuel
             </h2>
             <Button icon={<TrendingUp size={18} />}>Nouveau plan</Button>
@@ -137,7 +137,7 @@ export default function CareersPage() {
                   <div className="flex items-center gap-4">
                     <Avatar name={path.employee.name} size="lg" />
                     <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">
+                      <h3 className="font-semibold text-slate-900">
                         {path.employee.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -201,8 +201,8 @@ export default function CareersPage() {
                           key={index}
                           className={`flex items-center gap-3 p-2 rounded-lg ${
                             milestone.completed
-                              ? "bg-green-50 dark:bg-green-900/20"
-                              : "bg-slate-50 dark:bg-slate-800/50"
+                              ? "bg-green-50"
+                              : "bg-slate-50"
                           }`}
                         >
                           <div
@@ -217,8 +217,8 @@ export default function CareersPage() {
                           <span
                             className={
                               milestone.completed
-                                ? "text-green-700 dark:text-green-400"
-                                : "text-slate-600 dark:text-slate-400"
+                                ? "text-green-700"
+                                : "text-slate-600"
                             }
                           >
                             {milestone.title}
@@ -229,7 +229,7 @@ export default function CareersPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-end mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex justify-end mt-4 pt-4 border-t border-slate-200">
                   <Button variant="secondary" size="sm">
                     Voir le plan complet
                   </Button>
@@ -249,7 +249,7 @@ export default function CareersPage() {
             {promotions.map((promo) => (
               <div
                 key={promo.id}
-                className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+                className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"
               >
                 <div className="flex items-center gap-4">
                   <Avatar name={promo.employee} size="md" />

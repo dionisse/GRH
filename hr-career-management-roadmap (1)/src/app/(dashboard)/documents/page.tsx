@@ -1,18 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  FileText,
-  Upload,
-  Search,
-  Folder,
-  File,
-  Download,
-  Eye,
-  Trash2,
-  MoreVertical,
-  Filter,
-} from "lucide-react";
+import { FileText, Upload, Search, Folder, File, Download, Eye, Trash2, MoveVertical as MoreVertical, ListFilter as Filter } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -112,7 +101,7 @@ export default function DocumentsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Gestion documentaire
             </h2>
             <p className="text-slate-500">
@@ -136,8 +125,8 @@ export default function DocumentsPage() {
                     onClick={() => setSelectedFolder(folder.id)}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                       selectedFolder === folder.id
-                        ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600"
-                        : "hover:bg-slate-100 dark:hover:bg-slate-800"
+                        ? "bg-blue-50 text-blue-600"
+                        : "hover:bg-slate-100"
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -165,7 +154,7 @@ export default function DocumentsPage() {
                   <span className="text-slate-500">Utilisé</span>
                   <span>2.4 GB / 10 GB</span>
                 </div>
-                <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                   <div className="h-full w-1/4 bg-blue-600 rounded-full" />
                 </div>
               </div>
@@ -195,14 +184,14 @@ export default function DocumentsPage() {
                 {filteredDocuments.map((doc) => (
                   <div
                     key={doc.id}
-                    className="flex items-center justify-between p-4 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                    className="flex items-center justify-between p-4 rounded-lg hover:bg-slate-50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                         {getTypeIcon(doc.type)}
                       </div>
                       <div>
-                        <h4 className="font-medium text-slate-900 dark:text-white">
+                        <h4 className="font-medium text-slate-900">
                           {doc.name}
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
@@ -225,7 +214,7 @@ export default function DocumentsPage() {
                       <Button variant="ghost" size="sm" icon={<Download size={16} />}>
                         Télécharger
                       </Button>
-                      <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                      <button className="p-2 rounded-lg hover:bg-slate-100">
                         <MoreVertical size={16} className="text-slate-400" />
                       </button>
                     </div>
@@ -243,9 +232,9 @@ export default function DocumentsPage() {
           title="Importer un document"
         >
           <div className="space-y-4">
-            <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center">
+            <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center">
               <Upload size={40} className="mx-auto text-slate-400 mb-4" />
-              <p className="text-slate-600 dark:text-slate-400 mb-2">
+              <p className="text-slate-600 mb-2">
                 Glissez-déposez vos fichiers ici
               </p>
               <p className="text-sm text-slate-400 mb-4">ou</p>

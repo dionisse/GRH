@@ -14,7 +14,7 @@ export function DashboardLayout({ children, title }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-50">
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div
@@ -27,7 +27,7 @@ export function DashboardLayout({ children, title }: DashboardLayoutProps) {
       <div
         className={`fixed lg:relative ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        } transition-transform z-40`}
+        } transition-transform duration-300 z-40`}
       >
         <Sidebar
           collapsed={sidebarCollapsed}
@@ -45,7 +45,7 @@ export function DashboardLayout({ children, title }: DashboardLayoutProps) {
           title={title}
           onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         />
-        <main className="p-4 lg:p-6">{children}</main>
+        <main className="p-4 lg:p-8">{children}</main>
       </div>
     </div>
   );

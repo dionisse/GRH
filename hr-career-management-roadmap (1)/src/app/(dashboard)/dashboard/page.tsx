@@ -11,7 +11,7 @@ import {
   TrendingUp,
   Clock,
   UserCheck,
-  AlertCircle,
+  ArrowRight,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
@@ -37,7 +37,6 @@ export default function DashboardPage() {
   const [organizationId, setOrganizationId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get user from localStorage
     const userStr = localStorage.getItem("user");
     if (userStr) {
       const user = JSON.parse(userStr);
@@ -144,19 +143,19 @@ export default function DashboardPage() {
               <CardTitle>Activité récente</CardTitle>
               <CardDescription>Les dernières actions dans l'entreprise</CardDescription>
             </CardHeader>
-            <div className="space-y-4">
+            <div className="space-y-2">
               {recentActivities.map((activity) => (
                 <div
                   key={activity.id}
-                  className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                  className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50 transition-colors"
                 >
                   <Avatar name={activity.user} size="md" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-900 dark:text-white">
+                    <p className="text-sm text-slate-900">
                       <span className="font-medium">{activity.user}</span>{" "}
                       <span className="text-slate-500">{activity.action}</span>
                     </p>
-                    <p className="text-xs text-slate-400">{activity.time}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{activity.time}</p>
                   </div>
                   <Badge
                     variant={
@@ -190,18 +189,18 @@ export default function DashboardPage() {
               {upcomingEvents.map((event) => (
                 <div
                   key={event.id}
-                  className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100"
                 >
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex flex-col items-center justify-center">
-                    <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                  <div className="w-12 h-12 bg-blue-50 rounded-lg flex flex-col items-center justify-center border border-blue-100">
+                    <span className="text-xs text-blue-600 font-medium">
                       {event.date.split(" ")[1]}
                     </span>
-                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    <span className="text-lg font-bold text-blue-600">
                       {event.date.split(" ")[0]}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                    <p className="text-sm font-medium text-slate-900 truncate">
                       {event.title}
                     </p>
                     <Badge variant="primary" className="mt-1">
@@ -228,23 +227,23 @@ export default function DashboardPage() {
             </CardHeader>
             <div className="space-y-4">
               <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Congés payés</span>
-                  <span className="text-sm font-medium">18/25 jours restants</span>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-sm text-slate-600 font-medium">Congés payés</span>
+                  <span className="text-sm font-semibold text-slate-900">18/25 jours restants</span>
                 </div>
                 <Progress value={72} color="blue" />
               </div>
               <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">RTT</span>
-                  <span className="text-sm font-medium">8/12 jours restants</span>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-sm text-slate-600 font-medium">RTT</span>
+                  <span className="text-sm font-semibold text-slate-900">8/12 jours restants</span>
                 </div>
                 <Progress value={67} color="green" />
               </div>
               <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Maladie utilisés</span>
-                  <span className="text-sm font-medium">3 jours</span>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-sm text-slate-600 font-medium">Maladie utilisés</span>
+                  <span className="text-sm font-semibold text-slate-900">3 jours</span>
                 </div>
                 <Progress value={25} color="amber" />
               </div>
@@ -258,29 +257,29 @@ export default function DashboardPage() {
               <CardDescription>Accès direct aux fonctionnalités</CardDescription>
             </CardHeader>
             <div className="grid grid-cols-2 gap-3">
-              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 hover:shadow-sm transition-all border border-slate-100">
+                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
                   <Users size={20} className="text-blue-600" />
                 </div>
-                <span className="text-sm font-medium">Ajouter employé</span>
+                <span className="text-sm font-medium text-slate-700">Ajouter employé</span>
               </button>
-              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                  <Calendar size={20} className="text-green-600" />
+              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 hover:shadow-sm transition-all border border-slate-100">
+                <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                  <Calendar size={20} className="text-emerald-600" />
                 </div>
-                <span className="text-sm font-medium">Valider congés</span>
+                <span className="text-sm font-medium text-slate-700">Valider congés</span>
               </button>
-              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                  <Briefcase size={20} className="text-purple-600" />
+              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 hover:shadow-sm transition-all border border-slate-100">
+                <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+                  <Briefcase size={20} className="text-indigo-600" />
                 </div>
-                <span className="text-sm font-medium">Publier offre</span>
+                <span className="text-sm font-medium text-slate-700">Publier offre</span>
               </button>
-              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+              <button className="flex flex-col items-center gap-2 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 hover:shadow-sm transition-all border border-slate-100">
+                <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
                   <Target size={20} className="text-amber-600" />
                 </div>
-                <span className="text-sm font-medium">Lancer évaluation</span>
+                <span className="text-sm font-medium text-slate-700">Lancer évaluation</span>
               </button>
             </div>
           </Card>

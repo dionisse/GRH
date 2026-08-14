@@ -110,7 +110,7 @@ export default function RecruitmentPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
               <Briefcase size={24} className="text-blue-600" />
             </div>
             <div>
@@ -119,7 +119,7 @@ export default function RecruitmentPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
               <Users size={24} className="text-purple-600" />
             </div>
             <div>
@@ -128,7 +128,7 @@ export default function RecruitmentPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
               <Calendar size={24} className="text-amber-600" />
             </div>
             <div>
@@ -137,7 +137,7 @@ export default function RecruitmentPage() {
             </div>
           </Card>
           <Card className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <Users size={24} className="text-green-600" />
             </div>
             <div>
@@ -157,9 +157,9 @@ export default function RecruitmentPage() {
             {Object.entries(candidatesByStage).map(([stage, count]) => (
               <div
                 key={stage}
-                className="text-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+                className="text-center p-4 bg-slate-50 rounded-lg"
               >
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">
+                <p className="text-3xl font-bold text-slate-900">
                   {count}
                 </p>
                 <p className="text-sm text-slate-500 capitalize mt-1">
@@ -181,7 +181,7 @@ export default function RecruitmentPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Offres d'emploi
             </h2>
           </div>
@@ -234,7 +234,7 @@ export default function RecruitmentPage() {
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-slate-900">
                           {job.title}
                         </h3>
                         <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -257,7 +257,7 @@ export default function RecruitmentPage() {
                     </p>
 
                     <div className="flex items-center gap-4 mt-3">
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <span className="text-sm font-medium text-slate-700">
                         {formatSalary(job.salaryMin, job.salaryMax)}
                       </span>
                       <span className="text-sm text-slate-500">

@@ -2,20 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Briefcase,
-  DollarSign,
-  Edit,
-  FileText,
-  TrendingUp,
-  GraduationCap,
-  Target,
-} from "lucide-react";
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, Briefcase, DollarSign, CreditCard as Edit, FileText, TrendingUp, GraduationCap, Target } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -138,7 +125,7 @@ export default function EmployeeDetailPage() {
         {/* Back button */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-700"
         >
           <ArrowLeft size={20} />
           Retour aux employés
@@ -155,10 +142,10 @@ export default function EmployeeDetailPage() {
             <div className="flex-1">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  <h1 className="text-2xl font-bold text-slate-900">
                     {employee.user.firstName} {employee.user.lastName}
                   </h1>
-                  <p className="text-slate-500 dark:text-slate-400">
+                  <p className="text-slate-500">
                     {employee.position?.title || "Poste non défini"} • {employee.department?.name || "Département non défini"}
                   </p>
                   <p className="text-sm text-slate-400 mt-1">
@@ -178,19 +165,19 @@ export default function EmployeeDetailPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                 <div className="flex items-center gap-2 text-sm">
                   <Mail size={16} className="text-slate-400" />
-                  <span className="text-slate-600 dark:text-slate-300">{employee.user.email}</span>
+                  <span className="text-slate-600">{employee.user.email}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Phone size={16} className="text-slate-400" />
-                  <span className="text-slate-600 dark:text-slate-300">{employee.phone || "Non renseigné"}</span>
+                  <span className="text-slate-600">{employee.phone || "Non renseigné"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar size={16} className="text-slate-400" />
-                  <span className="text-slate-600 dark:text-slate-300">Depuis {formatDate(employee.hireDate)}</span>
+                  <span className="text-slate-600">Depuis {formatDate(employee.hireDate)}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <DollarSign size={16} className="text-slate-400" />
-                  <span className="text-slate-600 dark:text-slate-300">{formatSalary(employee.currentSalary)}/an</span>
+                  <span className="text-slate-600">{formatSalary(employee.currentSalary)}/an</span>
                 </div>
               </div>
             </div>
@@ -198,7 +185,7 @@ export default function EmployeeDetailPage() {
         </Card>
 
         {/* Tabs */}
-        <div className="border-b border-slate-200 dark:border-slate-700">
+        <div className="border-b border-slate-200">
           <nav className="flex gap-6">
             {tabs.map((tab) => (
               <button
@@ -207,7 +194,7 @@ export default function EmployeeDetailPage() {
                 className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                    : "border-transparent text-slate-500 hover:text-slate-700"
                 }`}
               >
                 {tab.label}
@@ -293,11 +280,11 @@ export default function EmployeeDetailPage() {
               <CardDescription>Évolution au sein de l'entreprise</CardDescription>
             </CardHeader>
             <div className="relative">
-              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700" />
+              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-200" />
               <div className="space-y-6 pl-10">
                 <div className="relative">
-                  <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-blue-600 border-4 border-white dark:border-slate-800" />
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
+                  <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-blue-600 border-4 border-white" />
+                  <div className="bg-slate-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold">{employee.position?.title || "Poste actuel"}</h4>
                       <Badge variant="success">Actuel</Badge>
@@ -309,8 +296,8 @@ export default function EmployeeDetailPage() {
                 </div>
                 {/* Historique factice */}
                 <div className="relative">
-                  <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-slate-400 border-4 border-white dark:border-slate-800" />
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
+                  <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-slate-400 border-4 border-white" />
+                  <div className="bg-slate-50 rounded-lg p-4">
                     <h4 className="font-semibold">Développeur Junior</h4>
                     <p className="text-sm text-slate-500">Technologie</p>
                     <p className="text-sm text-slate-500">Jan 2022 - Juin 2023</p>
@@ -337,7 +324,7 @@ export default function EmployeeDetailPage() {
                 { name: "Communication", level: 90, category: "Soft Skills" },
                 { name: "Gestion de projet", level: 65, category: "Management" },
               ].map((skill) => (
-                <div key={skill.name} className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div key={skill.name} className="p-4 bg-slate-50 rounded-lg">
                   <div className="flex justify-between mb-2">
                     <span className="font-medium">{skill.name}</span>
                     <Badge variant="gray">{skill.category}</Badge>
@@ -362,7 +349,7 @@ export default function EmployeeDetailPage() {
                 { name: "RIB", type: "Bancaire", date: "10/01/2023" },
                 { name: "Diplôme Master Informatique", type: "Diplôme", date: "01/09/2021" },
               ].map((doc) => (
-                <div key={doc.name} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div key={doc.name} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <FileText className="text-slate-400" size={20} />
                     <div>
@@ -392,7 +379,7 @@ export default function EmployeeDetailPage() {
                 { period: "2023 - Annuel", status: "Complété", rating: 4.2, date: "Complété le 20/12/2023" },
                 { period: "2023 - Mi-année", status: "Complété", rating: 4.0, date: "Complété le 15/06/2023" },
               ].map((evaluation) => (
-                <div key={evaluation.period} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                <div key={evaluation.period} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                   <div className="flex items-center gap-4">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                       evaluation.rating ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"

@@ -33,7 +33,7 @@ export default function SettingsPage() {
     <DashboardLayout title="Paramètres">
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-bold text-slate-900">
             Paramètres
           </h2>
           <p className="text-slate-500">
@@ -54,8 +54,8 @@ export default function SettingsPage() {
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
                         activeTab === tab.id
-                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600"
-                          : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-slate-600 hover:bg-slate-100"
                       }`}
                     >
                       <Icon size={18} />
@@ -122,7 +122,7 @@ export default function SettingsPage() {
                   ].map((user) => (
                     <div
                       key={user.email}
-                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+                      className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"
                     >
                       <div>
                         <p className="font-medium">{user.name}</p>
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                   ].map((notif) => (
                     <div
                       key={notif.title}
-                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+                      className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"
                     >
                       <div>
                         <p className="font-medium">{notif.title}</p>
@@ -226,7 +226,7 @@ export default function SettingsPage() {
                   <div className="border-t pt-6">
                     <h4 className="font-medium mb-3">Sessions actives</h4>
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                      <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                         <div>
                           <p className="font-medium">Chrome sur MacOS</p>
                           <p className="text-sm text-slate-500">Paris, France • Actif maintenant</p>
@@ -307,7 +307,7 @@ export default function SettingsPage() {
                       className="flex items-center justify-between p-4 border rounded-lg"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center font-bold">
+                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold">
                           {integration.icon}
                         </div>
                         <div>

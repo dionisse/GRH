@@ -2,15 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Plus,
-  Search,
-  MoreVertical,
-  Mail,
-  Phone,
-  MapPin,
-  Download,
-} from "lucide-react";
+import { Plus, Search, MoveVertical as MoreVertical, Mail, Phone, MapPin, Download } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -121,10 +113,10 @@ export default function EmployeesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-900">
               Gestion des employés
             </h2>
-            <p className="text-slate-500 dark:text-slate-400">
+            <p className="text-slate-500">
               {employees.length} employé{employees.length > 1 ? "s" : ""} au total • Bénin 🇧🇯
             </p>
           </div>
@@ -175,7 +167,7 @@ export default function EmployeesPage() {
           </div>
         ) : filteredEmployees.length === 0 ? (
           <Card className="text-center py-12">
-            <p className="text-slate-500 dark:text-slate-400">
+            <p className="text-slate-500">
               Aucun employé trouvé
             </p>
           </Card>
@@ -183,7 +175,7 @@ export default function EmployeesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredEmployees.map((employee) => (
               <Link key={employee.id} href={`/employees/${employee.id}`}>
-                <Card className="hover:border-blue-500 transition-colors cursor-pointer">
+                <Card className="hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer">
                   <div className="flex items-start gap-4">
                     <Avatar
                       name={`${employee.user.firstName} ${employee.user.lastName}`}
@@ -193,10 +185,10 @@ export default function EmployeesPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">
+                          <h3 className="font-semibold text-slate-900">
                             {employee.user.lastName} {employee.user.firstName}
                           </h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
+                          <p className="text-sm text-slate-500">
                             {employee.position?.title || "Poste non défini"}
                           </p>
                           <p className="text-xs text-blue-600 font-mono mt-1">
@@ -207,18 +199,18 @@ export default function EmployeesPage() {
                           onClick={(e) => {
                             e.preventDefault();
                           }}
-                          className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700"
+                          className="p-1 rounded hover:bg-slate-100"
                         >
                           <MoreVertical size={18} className="text-slate-400" />
                         </button>
                       </div>
                       
                       <div className="mt-3 space-y-1">
-                        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
                           <Mail size={14} />
                           <span className="truncate">{employee.user.email}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
                           <MapPin size={14} />
                           <span>{employee.department?.name || "Non assigné"}</span>
                         </div>
@@ -233,7 +225,7 @@ export default function EmployeesPage() {
                       </div>
 
                       {employee.baseSalary && (
-                        <p className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <p className="mt-2 text-sm font-medium text-slate-700">
                           {formatCFA(parseFloat(employee.baseSalary))}/mois
                         </p>
                       )}
@@ -255,7 +247,7 @@ export default function EmployeesPage() {
           <form className="space-y-6">
             {/* Informations personnelles */}
             <div>
-              <h4 className="font-medium text-slate-900 dark:text-white mb-3">
+              <h4 className="font-medium text-slate-900 mb-3">
                 Informations personnelles
               </h4>
               <div className="grid grid-cols-2 gap-4">
@@ -281,7 +273,7 @@ export default function EmployeesPage() {
 
             {/* Coordonnées */}
             <div>
-              <h4 className="font-medium text-slate-900 dark:text-white mb-3">
+              <h4 className="font-medium text-slate-900 mb-3">
                 Coordonnées
               </h4>
               <div className="grid grid-cols-2 gap-4">
@@ -302,7 +294,7 @@ export default function EmployeesPage() {
 
             {/* Informations professionnelles */}
             <div>
-              <h4 className="font-medium text-slate-900 dark:text-white mb-3">
+              <h4 className="font-medium text-slate-900 mb-3">
                 Informations professionnelles
               </h4>
               <div className="grid grid-cols-2 gap-4">
@@ -341,7 +333,7 @@ export default function EmployeesPage() {
 
             {/* Rémunération */}
             <div>
-              <h4 className="font-medium text-slate-900 dark:text-white mb-3">
+              <h4 className="font-medium text-slate-900 mb-3">
                 Rémunération (FCFA)
               </h4>
               <div className="grid grid-cols-3 gap-4">
@@ -368,7 +360,7 @@ export default function EmployeesPage() {
 
             {/* Informations bancaires */}
             <div>
-              <h4 className="font-medium text-slate-900 dark:text-white mb-3">
+              <h4 className="font-medium text-slate-900 mb-3">
                 Informations bancaires
               </h4>
               <div className="grid grid-cols-2 gap-4">
