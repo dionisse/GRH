@@ -9,6 +9,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const { id } = await params;
     const body = await request.json();
     const { status, approvedBy, rejectionReason } = body;
@@ -86,6 +87,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const { id } = await params;
 
     await db

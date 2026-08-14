@@ -6,6 +6,7 @@ import { eq, and, desc } from "drizzle-orm";
 // Get leave requests
 export async function GET(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ leaves: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
     const employeeId = searchParams.get("employeeId");
@@ -58,6 +59,7 @@ export async function GET(request: NextRequest) {
 // Create leave request
 export async function POST(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { employeeId, type, familyEvent, startDate, endDate, days, reason, medicalCertificate } = body;
 

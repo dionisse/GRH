@@ -5,6 +5,7 @@ import { eq, count, and, gte, lte } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ stats: { totalEmployees: 0, totalDepartments: 0, pendingLeaves: 0, activeEvaluations: 0, totalTrainings: 0, openPositions: 0, newCandidates: 0, onLeave: 0 } });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 

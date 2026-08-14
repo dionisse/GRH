@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 // Login
 export async function POST(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { email, password, action } = body;
 

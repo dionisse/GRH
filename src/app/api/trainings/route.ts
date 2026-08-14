@@ -6,6 +6,7 @@ import { eq, desc } from "drizzle-orm";
 // Get trainings
 export async function GET(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ trainings: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 
@@ -35,6 +36,7 @@ export async function GET(request: NextRequest) {
 // Create training
 export async function POST(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { organizationId, title, description, provider, duration, cost, category, isExternal } = body;
 

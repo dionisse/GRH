@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST() {
   try {
+    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     // Check if already seeded
     const existingOrgs = await db.select().from(organizations).limit(1);
     if (existingOrgs.length > 0) {

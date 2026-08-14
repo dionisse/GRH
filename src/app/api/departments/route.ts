@@ -6,6 +6,7 @@ import { eq, count, desc } from "drizzle-orm";
 // Get all departments
 export async function GET(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ departments: [] });
     const searchParams = request.nextUrl.searchParams;
     const organizationId = searchParams.get("organizationId");
 
@@ -59,6 +60,7 @@ export async function GET(request: NextRequest) {
 // Create department
 export async function POST(request: NextRequest) {
   try {
+    if (!db) return NextResponse.json({ error: "Base de données non configurée" }, { status: 503 });
     const body = await request.json();
     const { organizationId, name, description, managerId, parentId } = body;
 
